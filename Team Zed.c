@@ -46,7 +46,7 @@ void lift(){
 
 void drive(){
 	motor[rightDrive]=abs(vexRT[Ch2])<10?0:vexRT[Ch2];
-	motor[leftDrive]=abs(vexRT[Ch3])<10?0:vexRT[Ch3];];
+	motor[leftDrive]=abs(vexRT[Ch3])<10?0:vexRT[Ch3];
 }
 
 void pre_auton() {}
