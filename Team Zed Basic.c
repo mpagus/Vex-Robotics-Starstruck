@@ -27,12 +27,7 @@
 #include "Vex_Competition_Includes.c"
 
 void lift(int power){
-	motor[liftL1]=power;
-	motor[liftL2]=power;
-	motor[liftL3]=power;
-	motor[liftR1]=power;
-	motor[liftR2]=power;
-	motor[liftR3]=power;
+	motor[liftL1]=motor[liftL2]=motor[liftL3]=motor[liftR1]=motor[liftR2]=motor[liftR3]=power;
 }
 
 void lift(){
@@ -53,46 +48,24 @@ void drive(){
 }
 
 bool applyPressure = false;
-bool stopClose=true;
 void claw(){
 	if(vexRT[Btn6U]){
 		motor[intake]=127;
-		applyPressure = true;
-		stopClose=true;
-	}
-	else if (vexRT[Btn6D] && stopClose){
-		applyPressure=false;
-		stopClose=false;
-		wait1Msec(50);
+		applyPressure=true;
 	}
 	else if(vexRT[Btn6D]){
 		motor[intake]=-100;
 		applyPressure = false;
-		stopClose=false;
 	}
 	else{
-		motor[intake]=applyPressure*20;
+		motor[intake]=applyPressure*10;
 	}
-}
-
-void resetEncoders(){
-	nMotorEncoder[rightDrive]=0;
-	nMotorEncoder[leftDrive]=0;
-	nMotorEncoder[liftL1]=0;
-}
-
-void autonR(){
-	resetEncoders();
-}
-
-void autonL(){
-	resetEncoders();
 }
 
 void pre_auton() {}
 
 task autonomous {
-	/**lift(127);
+	lift(127);
 	wait1Msec(200);
 	lift(0);
 	motor[leftDrive] = -127;
@@ -103,13 +76,7 @@ task autonomous {
 	lift(127);
 	wait1Msec(1000);
 	lift(-127);
-	wait1Msec(500);*/
-	if(autonRL==1){
-
-	}
-	else{
-
-	}
+	wait1Msec(500);
 }
 
 task usercontrol(){

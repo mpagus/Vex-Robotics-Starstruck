@@ -28,13 +28,15 @@
 float desiredClaw = 0;
 float desiredLift = 0;
 
-void setLift(int val){
+void lift(int val){
 	motor[liftL1] = motor[liftL2] =motor[liftL3] = motor[liftR1] = motor[liftR2] = motor[liftR3] = val;
 }
 
-void drive(){
-	motor[rightDrive]=vexRT[Ch2];
-	motor[leftDrive]=vexRT[Ch3];
+task driveControl(){
+	while(true){
+		motor[rightDrive]=vexRT[Ch2];
+		motor[leftDrive]=vexRT[Ch3];
+	}
 }
 
 int limit(int val, int min = -127, int max = 127){
@@ -66,7 +68,7 @@ while(true){
 		desiredLift = old;
 	}
 	desiredLift = limit(desiredLift,-50,1250);
-	setLift((desiredLift - SensorValue(liftEncoder))*0.5);
+	lift((desiredLift - SensorValue(liftEncoder))*0.5);
 	delay(3);
 	}
 }
@@ -97,105 +99,97 @@ task clawControl(){
 void resetEncoders(){
 	nMotorEncoder[rightDrive]=0;
 	nMotorEncoder[leftDrive]=0;
-	nMotorEncoder[liftL1]=0;
+	nMotorEncoder[liftEncoder]=0;
+}
+
+void drive(int power){
+	motor[leftDrive]=motor[rightDrive]=power;
 }
 
 void autonR(){
 	resetEncoders();
-	motor[intake]=127;
-	wait1Msec(625);
-	lift(127);
-	wait1Msec(150);
-	lift(0);
-	motor[intake]=0;
-	while(nMotorEncoder(rightDrive2)<25){
-		rightDrive(127);
-		delay(5);
-	}
-	while(nMotorEncoder(leftDrive2)<150){
+	startTask(clawControl);
+	startTask(liftControl);
+	desiredClaw=1900;
+	desiredLift=50;
+	while(nMotorEncoder(rightDrive)<150){
 		drive(127);
-		delay(5);
-	}
-	lift(-127);
-	wait1Msec(125);
-	motor[intake]=-127;
-	wait1Msec(200);
-	while(nMotorEncoder(leftDrive2)>125){
-		drive(-127);
-		delay(5);
-	}
-	motor[intake]=127;
-	wait1Msec(215);
-	motor[intake]=50;
-	lift(127);
-	wait1Msec(350);
-	lift(10);
-	motor[intake]=15;
-	while(nMotorEncoder(leftDrive2)<-50){
-		leftDrive(-127);
-		delay(5);
-	}
-	while(nMotorEncoder(rightDrive2)>-125){
-		drive(-127);
-		delay(5);
+		delay(3);
 	}
 	drive(0);
-	lift(128);
-	wait1Msec(400);
-	motor[intake]=-128;
-	wait1Msec(50);
-	lift(0);
-	wait1Msec(125);
-	motor[intake]=0;
+	desiredClaw=1000;
+	desiredLift=0;
+	while(nMotorEncoder(rightDrive)<180){
+		drive(127);
+		delay(3);
+	}
+	drive(0);
+	desiredClaw=1900;
+	desiredLift=75;
+	while(nMotorEncoder(rightDrive)<225){
+		drive(127);
+		delay(3);
+	}
+	drive(0);
+	while(nMotorEncoder(leftDrive)>160){
+		motor[leftDrive]=-127;
+		delay(3);
+	}
+	while(nMotorEncoder(rightDrive)<275){
+		drive(127);
+		delay(3);
+	}
+	drive(0);
+	motor[leftDrive]=0;
+	desiredLift=500;
+	wait1Msec(250);
+	desiredClaw=500;
+	wait1Msec(75);
+	desiredLift=0;
+	desiredClaw=1000;
+	while(nMotorEncoder(rightDrive)<325){
+		motor[rightDrive]=127;
+		delay(3);
+	}
+	motor[rightDrive]=0;
+	while(nMotorEncoder(rightDrive)<450){
+		drive(127);
+		delay(3);
+	}
+	while(nMotorEncoder(leftDrive)<325){
+		motor[leftDrive]=127;
+		delay(3);
+	}
+	motor[leftDrive]=0;
+	while(nMotorEncoder(rightDrive)<550){
+		drive(127);
+		delay(3);
+	}
+	drive(0);
+	desiredClaw=1900;
+	wait1Msec(150);
+	desiredLift=50;
+	wait1Msec(100);
+	while(nMotorEncoder(leftDrive)<450){
+		motor[leftDrive]=127;
+		delay(3);
+	}
+	motor[leftDrive]=0;
+	while(nMotorEncoder(rightDrive)<700){
+		drive(127);
+		delay(3);
+	}
+	drive(0);
+	desiredLift=500;
+	wait1Msec(250);
+	desiredClaw=500;
+	wait1Msec(75);
+	desiredLift=0;
+	desiredClaw=1000;
 }
 
 void autonL(){
-	resetEncoders();
-	motor[intake]=127;
-	wait1Msec(625);
-	lift(127);
-	wait1Msec(150);
-	lift(0);
-	motor[intake]=0;
-	while(nMotorEncoder(rightDrive2)<25){
-		rightDrive(127);
-		delay(5);
-	}
-	while(nMotorEncoder(leftDrive2)<150){
-		drive(127);
-		delay(5);
-	}
-	lift(-127);
-	wait1Msec(125);
-	motor[intake]=-127;
-	wait1Msec(200);
-	while(nMotorEncoder(leftDrive2)>125){
-		drive(-127);
-		delay(5);
-	}
-	motor[intake]=127;
-	wait1Msec(215);
-	motor[intake]=50;
-	lift(127);
-	wait1Msec(350);
-	lift(10);
-	motor[intake]=15;
-	while(nMotorEncoder(leftDrive2)<-50){
-		leftDrive(-127);
-		delay(5);
-	}
-	while(nMotorEncoder(rightDrive2)>-125){
-		drive(-127);
-		delay(5);
-	}
-	drive(0);
-	lift(128);
-	wait1Msec(400);
-	motor[intake]=-128;
-	wait1Msec(50);
-	lift(0);
-	wait1Msec(125);
-	motor[intake]=0;
+	wait1Msec(100);
 }
 
 void pre_auton() {
@@ -203,31 +197,38 @@ void pre_auton() {
 }
 
 task autonomous {
-	/**lift(127);
+	/**
+	lift(127);
 	wait1Msec(200);
 	lift(0);
-	motor[leftDrive] = -127;
-	motor[rightDrive] = -127;
-	wait1Msec(1200);
-	motor[leftDrive] = 0;
-	motor[rightDrive] = 0;
+	drive(-127);
+	wait1Msec(100);
+	drive(0);
+	motor[intake1]=127;
+	motor[intake2]=127;
+	wait1Msec(500);
+	motor[intake1]=0;
+	motor[intake2]=0;
 	lift(127);
-	wait1Msec(1000);
-	lift(-127);
-	wait1Msec(500);*/
-	if(autonRL==true){
-		autonL();
-	}
-	else{
-		autonR();
-	}
+	wait1Msec(50);
+	lift(0);
+	drive(-127);
+	wait1Msec(1100);
+	drive(10);
+	lift(127);
+	wait1Msec(700);
+	motor[intake1]=127;
+	motor[intake2]=127;
+	wait1Msec(300);
+	drive(0);
+	motor[intake1]=0;
+	motor[intake2]=0;
+	*/
+	autonR();
 }
 
 task usercontrol(){
 	startTask(clawControl);
 	startTask(liftControl);
-	while(true){
-		drive();
-		delay(5);
-	}
+	startTask(driveControl);
 }
