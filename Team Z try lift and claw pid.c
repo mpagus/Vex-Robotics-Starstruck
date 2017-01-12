@@ -26,7 +26,8 @@
 
 //Main competition background code...do not modify!
 #include "Vex_Competition_Includes.c"
-float desiredClaw = 0;
+float desiredClaw1 = 0;
+float desiredClaw2 = 0;
 float desiredLift = 3340;
 
 void lift(int val){
@@ -115,7 +116,7 @@ task liftControl(){
 
 bool clawMovingOut1 = false;
 bool clawInMotion1 = false;
-task clawControl(){
+task clawControl1(){
   float kP = 0.1;
 	float kI = 0.008;
 	float kD = 1.5;
@@ -130,13 +131,13 @@ task clawControl(){
     if(vexRT[Btn6U]) {
 			if(clawMovingOut1)
 				desiredClaw1 = SensorValue[clawPot1];
-			desiredClaw1 -= 70;
+			desiredClaw1 += 70;
 			clawMovingOut1 = false;
 			clawInMotion1 = true;
 		} else if (vexRT[Btn6D]) {
 			if(!clawMovingOut1)
 				desiredClaw1 = SensorValue[clawPot1];
-			desiredClaw1 += 70;
+			desiredClaw1 -= 70;
 			clawMovingOut1 = true;
 			clawInMotion1 = true;
 		} else if (clawInMotion1) {
@@ -171,7 +172,7 @@ task clawControl(){
 
 bool clawMovingOut2 = false;
 bool clawInMotion2 = false;
-task clawControl(){
+task clawControl2(){
   float kP = 0.1;
 	float kI = 0.008;
 	float kD = 1.5;
@@ -357,7 +358,8 @@ task autonomous {
 }
 
 task usercontrol(){
-	startTask(clawControl);
+	startTask(clawControl1);
+	startTask(clawControl2);
 	startTask(liftControl);
 	startTask(driveControl);
 }
