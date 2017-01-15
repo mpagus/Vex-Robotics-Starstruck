@@ -9,8 +9,8 @@
 #pragma config(Motor,  port1,           liftL3,        tmotorVex393HighSpeed_HBridge, openLoop)
 #pragma config(Motor,  port2,           leftDrive,     tmotorVex393HighSpeed_MC29, openLoop, encoderPort, I2C_1)
 #pragma config(Motor,  port3,           rightDrive,    tmotorVex393HighSpeed_MC29, openLoop, reversed, encoderPort, I2C_2)
-#pragma config(Motor,  port4,           intake2,       tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port5,           intake1,       tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port4,           intake2,       tmotorVex393HighSpeed_MC29, openLoop, reversed)
+#pragma config(Motor,  port5,           intake1,       tmotorVex393HighSpeed_MC29, openLoop)
 #pragma config(Motor,  port6,           liftL2,        tmotorVex393HighSpeed_MC29, openLoop)
 #pragma config(Motor,  port7,           liftL1,        tmotorVex393HighSpeed_MC29, openLoop, reversed, encoderPort, I2C_3)
 #pragma config(Motor,  port8,           liftR2,        tmotorVex393HighSpeed_MC29, openLoop, driveRight)
@@ -117,9 +117,9 @@ task liftControl(){
 bool clawMovingOut1 = false;
 bool clawInMotion1 = false;
 task clawControl1(){
-  float kP = 0.1;
-	float kI = 0.008;
-	float kD = 1.5;
+  float kP = 0.01;
+	float kI = 0;
+	float kD = 0;
   float error;
   float integral;
   float derivative;
@@ -131,13 +131,13 @@ task clawControl1(){
     if(vexRT[Btn6U]) {
 			if(clawMovingOut1)
 				desiredClaw1 = SensorValue[clawPot1];
-			desiredClaw1 += 70;
+			desiredClaw1 -= 70;
 			clawMovingOut1 = false;
 			clawInMotion1 = true;
 		} else if (vexRT[Btn6D]) {
 			if(!clawMovingOut1)
 				desiredClaw1 = SensorValue[clawPot1];
-			desiredClaw1 -= 70;
+			desiredClaw1 += 70;
 			clawMovingOut1 = true;
 			clawInMotion1 = true;
 		} else if (clawInMotion1) {
@@ -154,7 +154,7 @@ task clawControl1(){
 		else if(abs(error)>1000)
 			error = 1000;
 		if(derivative==0 && integral==0)
-			desiredClaw = SensorValue[clawPot1];
+			desiredClaw1 = SensorValue[clawPot1];
 		if(integral>1500)
 			integral = 1500;
 
@@ -173,15 +173,15 @@ task clawControl1(){
 bool clawMovingOut2 = false;
 bool clawInMotion2 = false;
 task clawControl2(){
-  float kP = 0.1;
-	float kI = 0.008;
-	float kD = 1.5;
+  float kP = 0.01;
+	float kI = 0;
+	float kD = 0;
   float error;
   float integral;
   float derivative;
   float lastError;
   float lastSensorValue;
-	desiredClaw = SensorValue[clawPot2];
+	desiredClaw2 = SensorValue[clawPot2];
 
   while(true) {
     if(vexRT[Btn6U]) {
@@ -210,7 +210,7 @@ task clawControl2(){
 		else if(abs(error)>1000)
 			error = 1000;
 		if(derivative==0 && integral==0)
-			desiredClaw2 = SensorValue[clawPot];
+			desiredClaw2 = SensorValue[clawPot2];
 		if(integral>1500)
 			integral = 1500;
 
@@ -237,8 +237,9 @@ void drive(int power){
 }
 
 void autonR(){
-	resetEncoders();
-	startTask(clawControl);
+	/**resetEncoders();
+	startTask(clawControl1);
+	startTask(clawControl2);
 	startTask(liftControl);
 	desiredClaw=1900;
 	desiredLift=50;
@@ -315,7 +316,7 @@ void autonR(){
 	desiredClaw=500;
 	wait1Msec(75);
 	desiredLift=0;
-	desiredClaw=1000;
+	desiredClaw=1000;*/
 }
 
 void autonL(){
